@@ -6,8 +6,6 @@ apply plugin: 'maven-publish'
 
 android {
 
-    ndkVersion '22.0.7026061'
-
     compileSdkVersion 30
 
     defaultConfig {
@@ -37,7 +35,6 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.18.1"
         }
     }
 }

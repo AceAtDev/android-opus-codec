@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 if(ANDROID)
-  add_link_options("-Wl,-z,max-page-size=16384")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
 endif()
 
 
@@ -28,7 +28,7 @@ add_library( # Sets the name of the library.
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-#add other prebuilt libraries
+# Add prebuilt shared libs (rebuilt in repo for 16KB compatibility).
 add_library(opus SHARED IMPORTED)
 add_library(opusenc SHARED IMPORTED)
 

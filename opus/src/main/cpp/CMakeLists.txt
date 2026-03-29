@@ -5,6 +5,11 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
+if(ANDROID)
+  add_link_options("-Wl,-z,max-page-size=16384")
+endif()
+
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.

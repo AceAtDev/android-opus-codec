@@ -4,7 +4,42 @@ jdk:
 # Rebuild bundled libopus/libopusenc with 16KB page-size linker flags,
 # then publish the opus AAR to Maven local for JitPack pickup.
 install:
-  - export ANDROID_NDK_HOME=/opt/android-sdk-linux/ndk/21.3.6528147
+  - export ANDROID_NDK_HOME=/opt/android-sdk-linux/ndk/27.0.12077973
   - $ANDROID_NDK_HOME/ndk-build -C app/src/main/jni NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI="armeabi-v7a arm64-v8a x86 x86_64" APP_PLATFORM=android-18
   - for ABI in armeabi-v7a arm64-v8a x86 x86_64; do mkdir -p "opus/src/main/cpp/lib/$ABI"; cp "app/src/main/jni/libs/$ABI/libopus.so" "opus/src/main/cpp/lib/$ABI/libopus.so"; cp "app/src/main/jni/libs/$ABI/libopusenc.so" "opus/src/main/cpp/lib/$ABI/libopusenc.so"; done
+  - python3 - <<'PY'
+import subprocess
+import sys
+
+readelf = "/opt/android-sdk-linux/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf"
+libs = [
+    "opus/src/main/cpp/lib/arm64-v8a/libeasyopus.so",
+    "opus/src/main/cpp/lib/arm64-v8a/libopus.so",
+    "opus/src/main/cpp/lib/arm64-v8a/libopusenc.so",
+]
+
+bad = []
+for lib in libs:
+    out = subprocess.check_output([readelf, "-l", lib], text=True, stderr=subprocess.STDOUT)
+    load_aligns = []
+    for line in out.splitlines():
+        s = line.strip()
+        if s.startswith("LOAD"):
+            cols = s.split()
+            if cols:
+                load_aligns.append(cols[-1].lower())
+    if not load_aligns:
+        bad.append((lib, "no LOAD headers found"))
+        continue
+    if any(a != "0x4000" for a in load_aligns):
+        bad.append((lib, f"LOAD aligns={load_aligns}"))
+
+if bad:
+    for lib, reason in bad:
+        print(f"[16kb-check] FAIL {lib}: {reason}")
+    sys.exit(1)
+
+for lib in libs:
+    print(f"[16kb-check] OK {lib}")
+PY
   - ./gradlew :opus:publishReleasePublicationToMavenLocal -Pgroup=com.github.AceAtDev -Pversion=$VERSION --stacktrace

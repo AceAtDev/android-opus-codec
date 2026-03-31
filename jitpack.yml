@@ -1,6 +1,10 @@
 jdk:
   - openjdk11
 
-# Keep it minimal first; avoid sdkmanager/JAXB issues
+# Rebuild bundled libopus/libopusenc with 16KB page-size linker flags,
+# then publish the opus AAR to Maven local for JitPack pickup.
 install:
+  - export ANDROID_NDK_HOME=/opt/android-sdk-linux/ndk/21.3.6528147
+  - $ANDROID_NDK_HOME/ndk-build -C app/src/main/jni NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI="armeabi-v7a arm64-v8a x86 x86_64" APP_PLATFORM=android-18
+  - for ABI in armeabi-v7a arm64-v8a x86 x86_64; do mkdir -p "opus/src/main/cpp/lib/$ABI"; cp "app/src/main/jni/libs/$ABI/libopus.so" "opus/src/main/cpp/lib/$ABI/libopus.so"; cp "app/src/main/jni/libs/$ABI/libopusenc.so" "opus/src/main/cpp/lib/$ABI/libopusenc.so"; done
   - ./gradlew :opus:publishReleasePublicationToMavenLocal -Pgroup=com.github.AceAtDev -Pversion=$VERSION --stacktrace

@@ -27,7 +27,7 @@ $(CELT_SOURCES) $(SILK_SOURCES) $(OPUS_SOURCES)
 
 #These are not needed when compiling static libraries, but I will keep in case you want to build dynamic ones.
 LOCAL_LDLIBS        := -lm -llog
-LOCAL_LDFLAGS       += -Wl,-z,max-page-size=16384
+LOCAL_LDFLAGS       += -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384
 
 LOCAL_C_INCLUDES    := \
 $(LOCAL_PATH)/include \
@@ -72,7 +72,7 @@ LOCAL_CFLAGS 		+= -O3
 LOCAL_CFLAGS 		+= -DPACKAGE_NAME='"CHANGE THE PACKAGE NAME"'
 LOCAL_CFLAGS     	+= -DPACKAGE_VERSION='"1.0.0"'
 LOCAL_CFLAGS		+= -DEXPORT=
-LOCAL_LDFLAGS       += -Wl,-z,max-page-size=16384
+LOCAL_LDFLAGS       += -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384
 
 LOCAL_CPPFLAGS      := -DBSD=1
 LOCAL_CPPFLAGS      += -ffast-math -O3 -funroll-loops

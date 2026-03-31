@@ -147,7 +147,7 @@ void CodecOpus::decoderRelease() {
 int CodecOpus::checkForNull(const char *methodName, bool isEncoder) {
     const char *typeName = isEncoder ? "encoder" : "decoder";
 
-    if (isEncoder && !encoder || !isEncoder && !decoder) {
+    if ((isEncoder && !encoder) || (!isEncoder && !decoder)) {
         LOGE(TAG, "[%s] %s wasn't initialized you must call %sInit() first", methodName, typeName, typeName);
         return -1;
     }

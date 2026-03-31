@@ -6,7 +6,10 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 if(ANDROID)
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+  set(
+    CMAKE_SHARED_LINKER_FLAGS
+    "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384"
+  )
 endif()
 
 
